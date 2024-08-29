@@ -1,6 +1,6 @@
-// src/components/ChatbotComponent.tsx
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Maximize2, Settings, Send, Edit, Trash2, Check, Paperclip, Smile } from 'lucide-react';
+import React, {useRef, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
+import { X, Maximize2, Settings, Send, Edit, Trash2, Check, Paperclip, Smile, LogOut } from 'lucide-react';
 import './ChatbotComponent.css';
 
 type Message = {
@@ -26,6 +26,7 @@ const ChatbotComponent = () => {
     const [isTyping, setIsTyping] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState<number | null>(null);
     const chatbotRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     const handleSend = () => {
         if (inputText.trim()) {
@@ -105,6 +106,28 @@ const ChatbotComponent = () => {
         setShowEmojiPicker(null);
     };
 
+    const handleLogout = async () => {
+        try {
+            const response = await fetch('http://localhost:8003/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                },
+            });
+
+            if (response.ok) {
+                localStorage.removeItem('access_token');
+                alert('Logout successful');
+                navigate('/'); // Navigate to the login page
+            } else {
+                alert('Failed to logout. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error during logout:', error);
+            alert('Failed to logout. Please try again later.');
+        }
+    };
+
     const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => (
         <div className="emoji-picker">
             {['😀', '😂', '😍', '😢', '👍', '👎'].map(emoji => (
@@ -131,6 +154,7 @@ const ChatbotComponent = () => {
                 <div className="chatbot-header-right">
                     <Maximize2 className="chatbot-icon" />
                     <X className="chatbot-icon" />
+                    <LogOut className="chatbot-icon" onClick={handleLogout} />
                 </div>
             </div>
 
