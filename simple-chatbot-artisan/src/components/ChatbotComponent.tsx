@@ -1,24 +1,27 @@
 // src/components/ChatbotComponent.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Maximize2, Settings, Send, Edit, Trash2, Check } from 'lucide-react';
 import './ChatbotComponent.css';
 
 const ChatbotComponent = () => {
     const [messages, setMessages] = useState([
-        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot' },
-        { id: 2, text: "Hi, thanks for connecting!", sender: 'user' },
-        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot' },
+        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date() },
+        { id: 2, text: "Hi, thanks for connecting!", sender: 'user', timestamp: new Date() },
+        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date() },
     ]);
     const [isEditing, setIsEditing] = useState(null);
     const [editText, setEditText] = useState('');
     const [inputText, setInputText] = useState('');
+    const [hoveredMessage, setHoveredMessage] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [isTyping, setIsTyping] = useState(false);
     const chatbotRef = useRef(null);
 
     const handleSend = () => {
         if (inputText.trim()) {
-            setMessages([...messages, { id: Date.now(), text: inputText, sender: 'user' }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user', timestamp: new Date() }]);
             setInputText('');
+            simulateBotTyping();
         }
     };
 
@@ -28,15 +31,22 @@ const ChatbotComponent = () => {
         }
     };
 
-    const handleDelete = (id) => {
-        setMessages(messages.filter(msg => msg.id !== id));
-    };
-
     const handleUpdate = (id) => {
         setMessages(messages.map(msg =>
             msg.id === id ? { ...msg, text: editText } : msg
         ));
         setIsEditing(null);
+        setEditText('');
+    };
+
+    const handleEditKeyPress = (e, id) => {
+        if (e.key === 'Enter') {
+            handleUpdate(id);
+        }
+    };
+
+    const handleDelete = (id) => {
+        setMessages(messages.filter(msg => msg.id !== id));
     };
 
     const handleDragStart = (e) => {
@@ -57,6 +67,14 @@ const ChatbotComponent = () => {
 
     const handleDragOver = (e) => {
         e.preventDefault();
+    };
+
+    const simulateBotTyping = () => {
+        setIsTyping(true);
+        setTimeout(() => {
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: "This is a bot response.", sender: 'bot', timestamp: new Date() }]);
+            setIsTyping(false);
+        }, 2000); // Simulate a 2-second typing delay
     };
 
     return (
@@ -82,7 +100,12 @@ const ChatbotComponent = () => {
 
             <div className="chatbot-messages">
                 {messages.map((msg) => (
-                    <div key={msg.id} className={`chatbot-message ${msg.sender === 'user' ? 'chatbot-message-user' : 'chatbot-message-bot'}`}>
+                    <div
+                        key={msg.id}
+                        className={`chatbot-message ${msg.sender === 'user' ? 'chatbot-message-user' : 'chatbot-message-bot'}`}
+                        onMouseEnter={() => setHoveredMessage(msg.id)}
+                        onMouseLeave={() => setHoveredMessage(null)}
+                    >
                         {isEditing === msg.id ? (
                             <div className="chatbot-edit-container">
                                 <input
@@ -90,20 +113,29 @@ const ChatbotComponent = () => {
                                     value={editText}
                                     onChange={(e) => setEditText(e.target.value)}
                                     className="chatbot-edit-input"
+                                    onKeyPress={(e) => handleEditKeyPress(e, msg.id)}
                                 />
                                 <Check className="chatbot-icon" onClick={() => handleUpdate(msg.id)} />
                             </div>
                         ) : (
                             <>
                                 <span>{msg.text}</span>
-                                <div className="chatbot-message-options">
-                                    <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />
-                                    <Trash2 className="chatbot-icon" onClick={() => handleDelete(msg.id)} />
-                                </div>
+                                <span className="chatbot-timestamp">{msg.timestamp.toLocaleTimeString()}</span>
+                                {hoveredMessage === msg.id && (
+                                    <div className="chatbot-message-options">
+                                        <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />
+                                        <Trash2 className="chatbot-icon" onClick={() => handleDelete(msg.id)} />
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
                 ))}
+                {isTyping && (
+                    <div className="chatbot-typing-indicator">
+                        Ava is typing...
+                    </div>
+                )}
             </div>
 
             <div className="chatbot-input-container">
