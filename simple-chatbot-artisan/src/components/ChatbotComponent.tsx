@@ -1,6 +1,6 @@
 // src/components/ChatbotComponent.tsx
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Maximize2, Settings, Send, Edit, Trash2, Check } from 'lucide-react';
+import { X, Maximize2, Settings, Send, Edit, Trash2, Check, Paperclip } from 'lucide-react';
 import './ChatbotComponent.css';
 
 const ChatbotComponent = () => {
@@ -22,6 +22,13 @@ const ChatbotComponent = () => {
             setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user', timestamp: new Date() }]);
             setInputText('');
             simulateBotTyping();
+        }
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: `File: ${file.name}`, sender: 'user', timestamp: new Date(), file }]);
         }
     };
 
@@ -146,6 +153,15 @@ const ChatbotComponent = () => {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyPress={handleKeyPress}
+                />
+                <label htmlFor="file-upload" className="chatbot-file-upload">
+                    <Paperclip className="chatbot-icon" />
+                </label>
+                <input
+                    id="file-upload"
+                    type="file"
+                    style={{ display: 'none' }}
+                    onChange={handleFileUpload}
                 />
                 <Send className="chatbot-icon" onClick={handleSend} />
             </div>

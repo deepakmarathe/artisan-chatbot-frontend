@@ -114,8 +114,6 @@
     padding: 10px;
 }
 
-/* ChatbotComponent.css */
-/* ChatbotComponent.css */
 .chatbot-timestamp {
     font-size: 10px;
     margin-left: 10px;
@@ -127,4 +125,8 @@
 
 .chatbot-message-bot .chatbot-timestamp {
     color: #555; /* Standard color for better visibility on light background */
+}
+
+.chatbot-file-upload {
+    cursor: pointer;
 }
