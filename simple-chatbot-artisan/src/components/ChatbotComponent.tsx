@@ -6,10 +6,11 @@ import './ChatbotComponent.css';
 type Message = {
     id: number;
     text: string;
-    sender: 'bot' | 'user';
+    sender: 'bot' | 'user' | 'system';
     timestamp: Date;
     reactions: { [key: string]: number };
     avatar: string;
+    status?: 'sent' | 'failed';
 };
 
 const ChatbotComponent = () => {
@@ -52,9 +53,21 @@ const ChatbotComponent = () => {
                     }));
                     setMessages(fetchedMessages);
                 } else {
-                    console.error('Failed to fetch messages');
+                    throw new Error('Failed to fetch messages');
                 }
             } catch (error) {
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    {
+                        id: Date.now(),
+                        text: `**Error:** Failed to fetch messages. `,
+                        sender: 'system',
+                        timestamp: new Date(),
+                        reactions: {},
+                        avatar: '',
+                        status: 'failed'
+                    }
+                ]);
                 console.error('Error fetching messages:', error);
             }
         };
@@ -70,7 +83,8 @@ const ChatbotComponent = () => {
                 sender: 'user',
                 timestamp: new Date(),
                 reactions: {},
-                avatar: 'https://i.pravatar.cc/40?img=2'
+                avatar: 'https://i.pravatar.cc/40?img=2',
+                status: 'sent'
             };
             setMessages(prevMessages => [...prevMessages, newMessage]);
             setInputText('');
@@ -95,13 +109,29 @@ const ChatbotComponent = () => {
                         sender: 'bot',
                         timestamp: new Date(),
                         reactions: {},
-                        avatar: 'https://i.pravatar.cc/40?img=1'
+                        avatar: 'https://i.pravatar.cc/40?img=1',
+                        status: 'sent'
                     };
                     setMessages(prevMessages => [...prevMessages, botMessage]);
                 } else {
-                    console.error('Failed to send message');
+                    throw new Error('Failed to send message');
                 }
             } catch (error) {
+                setMessages(prevMessages => prevMessages.map(msg =>
+                    msg.id === newMessage.id ? { ...msg, status: 'failed' } : msg
+                ));
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    {
+                        id: Date.now(),
+                        text: `**Error:** Failed to send message.}`,
+                        sender: 'system',
+                        timestamp: new Date(),
+                        reactions: {},
+                        avatar: '',
+                        status: 'failed'
+                    }
+                ]);
                 console.error('Error during message send:', error);
             } finally {
                 setIsTyping(false);
@@ -143,14 +173,29 @@ const ChatbotComponent = () => {
 
             if (response.ok) {
                 setMessages(messages.map(msg =>
-                    msg.id === id ? { ...msg, text: editText, reactions: msg.reactions } : msg
+                    msg.id === id ? { ...msg, text: editText, reactions: msg.reactions, status: 'sent' } : msg
                 ));
                 setIsEditing(null);
                 setEditText('');
             } else {
-                console.error('Failed to update message');
+                throw new Error('Failed to update message');
             }
         } catch (error) {
+            setMessages(messages.map(msg =>
+                msg.id === id ? { ...msg, status: 'failed' } : msg
+            ));
+            setMessages(prevMessages => [
+                ...prevMessages,
+                {
+                    id: Date.now(),
+                    text: `**Error:** Failed to update message. `,
+                    sender: 'system',
+                    timestamp: new Date(),
+                    reactions: {},
+                    avatar: '',
+                    status: 'failed'
+                }
+            ]);
             console.error('Error during message update:', error);
         }
     };
@@ -175,18 +220,45 @@ const ChatbotComponent = () => {
             if (response.ok) {
                 setMessages(messages.filter(msg => msg.id !== id));
             } else {
-                console.error('Failed to delete message');
+                throw new Error('Failed to delete message');
             }
         } catch (error) {
+            setMessages(messages.map(msg =>
+                msg.id === id ? { ...msg, status: 'failed' } : msg
+            ));
+            setMessages(prevMessages => [
+                ...prevMessages,
+                {
+                    id: Date.now(),
+                    text: `**Error:** Failed to delete message. `,
+                    sender: 'system',
+                    timestamp: new Date(),
+                    reactions: {},
+                    avatar: '',
+                    status: 'failed'
+                }
+            ]);
             console.error('Error during message delete:', error);
         }
     };
+
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         const rect = chatbotRef.current!.getBoundingClientRect();
         e.dataTransfer.setData('text/plain', JSON.stringify({
             offsetX: e.clientX - rect.left,
             offsetY: e.clientY - rect.top
         }));
+    };
+
+    const handleRetry = async (msg: Message) => {
+        if (msg.status === 'failed') {
+            if (msg.sender === 'user') {
+                setInputText(msg.text);
+                await handleSend();
+            } else {
+                await handleUpdate(msg.id);
+            }
+        }
     };
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -287,8 +359,13 @@ const ChatbotComponent = () => {
                             </div>
                         ) : (
                             <>
-                                <span>{msg.text}</span>
+                                <span style={{ color: msg.status === 'failed' ? 'red' : 'inherit', fontWeight: msg.status === 'failed' ? 'bold' : 'normal' }}>
+                                    {msg.text}
+                                </span>
                                 <span className="chatbot-timestamp">{msg.timestamp.toLocaleTimeString()}</span>
+                                {msg.status === 'failed' && (
+                                    <button onClick={() => handleRetry(msg)}>Retry</button>
+                                )}
                                 {hoveredMessage === msg.id && (
                                     <div className="chatbot-message-options">
                                         <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />
