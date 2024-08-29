@@ -1,70 +1,79 @@
 // src/components/ChatbotComponent.tsx
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Maximize2, Settings, Send, Edit, Trash2, Check, Paperclip } from 'lucide-react';
+import { X, Maximize2, Settings, Send, Edit, Trash2, Check, Paperclip, Smile } from 'lucide-react';
 import './ChatbotComponent.css';
 
+type Message = {
+    id: number;
+    text: string;
+    sender: 'bot' | 'user';
+    timestamp: Date;
+    reactions: { [key: string]: number };
+};
+
 const ChatbotComponent = () => {
-    const [messages, setMessages] = useState([
-        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date() },
-        { id: 2, text: "Hi, thanks for connecting!", sender: 'user', timestamp: new Date() },
-        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date() },
+    const [messages, setMessages] = useState<Message[]>([
+        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date(), reactions: {} },
+        { id: 2, text: "Hi, thanks for connecting!", sender: 'user', timestamp: new Date(), reactions: {} },
+        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date(), reactions: {} },
     ]);
-    const [isEditing, setIsEditing] = useState(null);
+    const [isEditing, setIsEditing] = useState<number | null>(null);
     const [editText, setEditText] = useState('');
     const [inputText, setInputText] = useState('');
-    const [hoveredMessage, setHoveredMessage] = useState(null);
+    const [hoveredMessage, setHoveredMessage] = useState<number | null>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isTyping, setIsTyping] = useState(false);
-    const chatbotRef = useRef(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState<number | null>(null);
+    const chatbotRef = useRef<HTMLDivElement>(null);
 
     const handleSend = () => {
         if (inputText.trim()) {
-            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user', timestamp: new Date() }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user', timestamp: new Date(), reactions: {} }]);
             setInputText('');
             simulateBotTyping();
         }
     };
 
-    const handleFileUpload = (e) => {
-        const file = e.target.files[0];
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
         if (file) {
-            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: `File: ${file.name}`, sender: 'user', timestamp: new Date(), file }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: `File: ${file.name}`, sender: 'user', timestamp: new Date(), reactions: {} }]);
         }
     };
 
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             handleSend();
         }
     };
 
-    const handleUpdate = (id) => {
+    const handleUpdate = (id: number) => {
         setMessages(messages.map(msg =>
-            msg.id === id ? { ...msg, text: editText } : msg
+            msg.id === id ? { ...msg, text: editText, reactions: msg.reactions } : msg
         ));
         setIsEditing(null);
         setEditText('');
     };
 
-    const handleEditKeyPress = (e, id) => {
+    const handleEditKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, id: number) => {
         if (e.key === 'Enter') {
             handleUpdate(id);
         }
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = (id: number) => {
         setMessages(messages.filter(msg => msg.id !== id));
     };
 
-    const handleDragStart = (e) => {
-        const rect = chatbotRef.current.getBoundingClientRect();
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        const rect = chatbotRef.current!.getBoundingClientRect();
         e.dataTransfer.setData('text/plain', JSON.stringify({
             offsetX: e.clientX - rect.left,
             offsetY: e.clientY - rect.top
         }));
     };
 
-    const handleDrop = (e) => {
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         const offset = JSON.parse(e.dataTransfer.getData('text/plain'));
         const newX = e.clientX - offset.offsetX;
@@ -72,17 +81,36 @@ const ChatbotComponent = () => {
         setPosition({ x: newX, y: newY });
     };
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
     };
 
     const simulateBotTyping = () => {
         setIsTyping(true);
         setTimeout(() => {
-            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: "This is a bot response.", sender: 'bot', timestamp: new Date() }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: "This is a bot response.", sender: 'bot', timestamp: new Date(), reactions: {} }]);
             setIsTyping(false);
         }, 2000); // Simulate a 2-second typing delay
     };
+
+    const handleAddReaction = (messageId: number, emoji: string) => {
+        setMessages(messages.map(msg => {
+            if (msg.id === messageId) {
+                const newReactions = { ...msg.reactions, [emoji]: (msg.reactions[emoji] || 0) + 1 };
+                return { ...msg, reactions: newReactions };
+            }
+            return msg;
+        }));
+        setShowEmojiPicker(null);
+    };
+
+    const EmojiPicker = ({ onSelect }: { onSelect: (emoji: string) => void }) => (
+        <div className="emoji-picker">
+            {['😀', '😂', '😍', '😢', '👍', '👎'].map(emoji => (
+                <span key={emoji} onClick={() => onSelect(emoji)}>{emoji}</span>
+            ))}
+        </div>
+    );
 
     return (
         <div
@@ -132,8 +160,17 @@ const ChatbotComponent = () => {
                                     <div className="chatbot-message-options">
                                         <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />
                                         <Trash2 className="chatbot-icon" onClick={() => handleDelete(msg.id)} />
+                                        <Smile className="chatbot-icon" onClick={() => setShowEmojiPicker(msg.id)} />
                                     </div>
                                 )}
+                                {showEmojiPicker === msg.id && (
+                                    <EmojiPicker onSelect={(emoji) => handleAddReaction(msg.id, emoji)} />
+                                )}
+                                <div className="chatbot-reactions">
+                                    {Object.entries(msg.reactions).map(([emoji, count]) => (
+                                        <span key={emoji} className="chatbot-reaction">{emoji} {count as number}</span>
+                                    ))}
+                                </div>
                             </>
                         )}
                     </div>
