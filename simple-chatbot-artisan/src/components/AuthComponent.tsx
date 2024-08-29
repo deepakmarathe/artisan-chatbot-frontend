@@ -16,6 +16,7 @@ const AuthComponent = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    // Update the handleLogin function in AuthComponent to store the username
     const handleLogin = async () => {
         if (!validate()) return;
         try {
@@ -32,6 +33,8 @@ const AuthComponent = () => {
             });
 
             if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('username', data.username); // Store the username
                 navigate('/chat'); // Navigate to the chat page
             } else {
                 const errorData = await response.json();
@@ -74,6 +77,12 @@ const AuthComponent = () => {
         }
     };
 
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    };
+
     return (
         <div className="auth-container">
             <h2>Login</h2>
@@ -83,6 +92,7 @@ const AuthComponent = () => {
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="auth-input"
             />
             {errors.username && <div className="error">{errors.username}</div>}
@@ -92,6 +102,7 @@ const AuthComponent = () => {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="auth-input"
             />
             {errors.password && <div className="error">{errors.password}</div>}
