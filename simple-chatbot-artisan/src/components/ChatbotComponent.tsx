@@ -29,15 +29,22 @@ const ChatbotComponent = () => {
         }
     };
 
-    const handleDelete = (id) => {
-        setMessages(messages.filter(msg => msg.id !== id));
-    };
-
     const handleUpdate = (id) => {
         setMessages(messages.map(msg =>
             msg.id === id ? { ...msg, text: editText } : msg
         ));
         setIsEditing(null);
+        setEditText('');
+    };
+
+    const handleEditKeyPress = (e, id) => {
+        if (e.key === 'Enter') {
+            handleUpdate(id);
+        }
+    };
+
+    const handleDelete = (id) => {
+        setMessages(messages.filter(msg => msg.id !== id));
     };
 
     const handleDragStart = (e) => {
@@ -96,6 +103,7 @@ const ChatbotComponent = () => {
                                     value={editText}
                                     onChange={(e) => setEditText(e.target.value)}
                                     className="chatbot-edit-input"
+                                    onKeyPress={(e) => handleEditKeyPress(e, msg.id)}
                                 />
                                 <Check className="chatbot-icon" onClick={() => handleUpdate(msg.id)} />
                             </div>
