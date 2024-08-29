@@ -22,6 +22,12 @@ const ChatbotComponent = () => {
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSend();
+        }
+    };
+
     const handleDelete = (id) => {
         setMessages(messages.filter(msg => msg.id !== id));
     };
@@ -107,6 +113,7 @@ const ChatbotComponent = () => {
                     className="chatbot-input"
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
+                    onKeyPress={handleKeyPress}
                 />
                 <Send className="chatbot-icon" onClick={handleSend} />
             </div>
