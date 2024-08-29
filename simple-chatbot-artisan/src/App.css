@@ -1,5 +1,23 @@
+/* App.css */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .App {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100% - 40px); /* Leave 20px margin from top and bottom */
+  width: calc(100% - 40px);  /* Leave 20px margin from left and right */
+  margin: 20px;
 }
 
 .App-logo {

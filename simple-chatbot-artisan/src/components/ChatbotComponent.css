@@ -1,14 +1,5 @@
 /* ChatbotComponent.css */
-body, html {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .chatbot-container {
-    position: fixed;
     width: 300px;
     height: 80%;
     background-color: white;
@@ -19,6 +10,7 @@ body, html {
     word-wrap: break-word;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .chatbot-header, .chatbot-footer {
