@@ -35,7 +35,7 @@ const AuthComponent = () => {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('username', data.username); // Store the username
-                localStorage.setItem('token', data.access_token); // Store the token
+                localStorage.setItem('access_token', data.access_token); // Store the token
                 navigate('/chat'); // Navigate to the chat page
             } else {
                 const errorData = await response.json();

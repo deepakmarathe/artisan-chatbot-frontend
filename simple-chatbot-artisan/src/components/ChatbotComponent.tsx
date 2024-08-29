@@ -13,32 +13,7 @@ type Message = {
 };
 
 const ChatbotComponent = () => {
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 1,
-            text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!",
-            sender: 'bot',
-            timestamp: new Date(),
-            reactions: {},
-            avatar: 'https://i.pravatar.cc/40?img=1'
-        },
-        {
-            id: 2,
-            text: "Hi, thanks for connecting!",
-            sender: 'user',
-            timestamp: new Date(),
-            reactions: {},
-            avatar: 'https://i.pravatar.cc/40?img=2'
-        },
-        {
-            id: 3,
-            text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!",
-            sender: 'bot',
-            timestamp: new Date(),
-            reactions: {},
-            avatar: 'https://i.pravatar.cc/40?img=1'
-        },
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [isEditing, setIsEditing] = useState<number | null>(null);
     const [editText, setEditText] = useState('');
     const [inputText, setInputText] = useState('');
@@ -53,6 +28,38 @@ const ChatbotComponent = () => {
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
         setUsername(storedUsername);
+
+        const fetchMessages = async () => {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('http://localhost:8003/messages/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const fetchedMessages: Message[] = data.map((msg: any) => ({
+                        id: msg.id,
+                        text: msg.content,
+                        sender: msg.sender,
+                        timestamp: new Date(msg.timestamp),
+                        reactions: msg.reactions || {},
+                        avatar: msg.sender === 'user' ? 'https://i.pravatar.cc/40?img=2' : 'https://i.pravatar.cc/40?img=1'
+                    }));
+                    setMessages(fetchedMessages);
+                } else {
+                    console.error('Failed to fetch messages');
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        };
+
+        fetchMessages();
     }, []);
 
     const handleSend = async () => {
@@ -70,7 +77,7 @@ const ChatbotComponent = () => {
             setIsTyping(true);
 
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('access_token');
                 const response = await fetch('http://localhost:8003/messages/', {
                     method: 'POST',
                     headers: {
