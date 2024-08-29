@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "lucide-react": "^0.436.0",
+    "react-router-dom": "^6.26.1",
     "typescript": "^5.5.4"
   }
 }
