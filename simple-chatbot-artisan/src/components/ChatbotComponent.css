@@ -117,7 +117,7 @@
 
 .chatbot-timestamp {
     font-size: 12px; /* Increased font size for better readability */
-    margin-left: 10px;
+    margin-left: auto;
 }
 
 .chatbot-message-user .chatbot-timestamp {
