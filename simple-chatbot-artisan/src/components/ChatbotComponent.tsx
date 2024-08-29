@@ -12,6 +12,7 @@ const ChatbotComponent = () => {
     const [isEditing, setIsEditing] = useState(null);
     const [editText, setEditText] = useState('');
     const [inputText, setInputText] = useState('');
+    const [hoveredMessage, setHoveredMessage] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const chatbotRef = useRef(null);
 
@@ -82,7 +83,12 @@ const ChatbotComponent = () => {
 
             <div className="chatbot-messages">
                 {messages.map((msg) => (
-                    <div key={msg.id} className={`chatbot-message ${msg.sender === 'user' ? 'chatbot-message-user' : 'chatbot-message-bot'}`}>
+                    <div
+                        key={msg.id}
+                        className={`chatbot-message ${msg.sender === 'user' ? 'chatbot-message-user' : 'chatbot-message-bot'}`}
+                        onMouseEnter={() => setHoveredMessage(msg.id)}
+                        onMouseLeave={() => setHoveredMessage(null)}
+                    >
                         {isEditing === msg.id ? (
                             <div className="chatbot-edit-container">
                                 <input
@@ -96,10 +102,12 @@ const ChatbotComponent = () => {
                         ) : (
                             <>
                                 <span>{msg.text}</span>
-                                <div className="chatbot-message-options">
-                                    <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />
-                                    <Trash2 className="chatbot-icon" onClick={() => handleDelete(msg.id)} />
-                                </div>
+                                {hoveredMessage === msg.id && (
+                                    <div className="chatbot-message-options">
+                                        <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />
+                                        <Trash2 className="chatbot-icon" onClick={() => handleDelete(msg.id)} />
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
