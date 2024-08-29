@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { X, Maximize2, Settings, Send } from 'lucide-react';
+// src/components/ChatbotComponent.tsx
+import React, { useState, useRef } from 'react';
+import { X, Maximize2, Settings, Send, Edit, Trash2, Check } from 'lucide-react';
+import './ChatbotComponent.css';
 
 const ChatbotComponent = () => {
     const [messages, setMessages] = useState([
@@ -7,57 +9,121 @@ const ChatbotComponent = () => {
         { id: 2, text: "Hi, thanks for connecting!", sender: 'user' },
         { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot' },
     ]);
+    const [isEditing, setIsEditing] = useState(null);
+    const [editText, setEditText] = useState('');
+    const [inputText, setInputText] = useState('');
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const chatbotRef = useRef(null);
 
     const handleSend = () => {
-        // Implement send functionality
+        if (inputText.trim()) {
+            setMessages([...messages, { id: Date.now(), text: inputText, sender: 'user' }]);
+            setInputText('');
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSend();
+        }
     };
 
     const handleDelete = (id) => {
         setMessages(messages.filter(msg => msg.id !== id));
     };
 
-    const handleUpdate = (id, newText) => {
+    const handleUpdate = (id) => {
         setMessages(messages.map(msg =>
-            msg.id === id ? { ...msg, text: newText } : msg
+            msg.id === id ? { ...msg, text: editText } : msg
         ));
+        setIsEditing(null);
+    };
+
+    const handleDragStart = (e) => {
+        const rect = chatbotRef.current.getBoundingClientRect();
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+            offsetX: e.clientX - rect.left,
+            offsetY: e.clientY - rect.top
+        }));
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        const offset = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const newX = e.clientX - offset.offsetX;
+        const newY = e.clientY - offset.offsetY;
+        setPosition({ x: newX, y: newY });
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
     };
 
     return (
-        <div className="w-80 bg-white rounded-lg shadow-lg">
-        <div className="flex justify-between items-center p-4 border-b">
-        <div className="flex items-center space-x-2">
-        <img src="/api/placeholder/40/40" alt="Ava" className="w-10 h-10 rounded-full" />
-    <span className="font-semibold">Hey👋, I'm Ava</span>
-    </div>
-    <div className="flex space-x-2">
-    <Maximize2 className="w-5 h-5 text-gray-500 cursor-pointer" />
-    <X className="w-5 h-5 text-gray-500 cursor-pointer" />
-        </div>
-        </div>
+        <div
+            ref={chatbotRef}
+            className="chatbot-container"
+            draggable
+            onDragStart={handleDragStart}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            style={{ left: `${position.x}px`, top: `${position.y}px` }}
+        >
+            <div className="chatbot-header">
+                <div className="chatbot-header-left">
+                    <img src="/api/placeholder/40/40" alt="Ava" className="chatbot-avatar" />
+                    <span className="chatbot-title">Hey👋, I'm Ava</span>
+                </div>
+                <div className="chatbot-header-right">
+                    <Maximize2 className="chatbot-icon" />
+                    <X className="chatbot-icon" />
+                </div>
+            </div>
 
-        <div className="h-80 overflow-y-auto p-4 space-y-4">
-    {messages.map((msg) => (
-            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-    <div className={`max-w-3/4 p-2 rounded-lg ${msg.sender === 'user' ? 'bg-purple-500 text-white' : 'bg-gray-200'}`}>
-    {msg.text}
-    </div>
-    </div>
-))}
-    </div>
+            <div className="chatbot-messages">
+                {messages.map((msg) => (
+                    <div key={msg.id} className={`chatbot-message ${msg.sender === 'user' ? 'chatbot-message-user' : 'chatbot-message-bot'}`}>
+                        {isEditing === msg.id ? (
+                            <div className="chatbot-edit-container">
+                                <input
+                                    type="text"
+                                    value={editText}
+                                    onChange={(e) => setEditText(e.target.value)}
+                                    className="chatbot-edit-input"
+                                />
+                                <Check className="chatbot-icon" onClick={() => handleUpdate(msg.id)} />
+                            </div>
+                        ) : (
+                            <>
+                                <span>{msg.text}</span>
+                                <div className="chatbot-message-options">
+                                    <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />
+                                    <Trash2 className="chatbot-icon" onClick={() => handleDelete(msg.id)} />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                ))}
+            </div>
 
-    <div className="p-4 border-t">
-    <div className="flex items-center space-x-2">
-    <input type="text" placeholder="Type a message..." className="flex-grow p-2 border rounded-lg" />
-    <Send className="w-6 h-6 text-purple-500 cursor-pointer" onClick={handleSend} />
-    </div>
-    </div>
+            <div className="chatbot-input-container">
+                <input
+                    type="text"
+                    placeholder="Type a message..."
+                    className="chatbot-input"
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                />
+                <Send className="chatbot-icon" onClick={handleSend} />
+            </div>
 
-    <div className="flex justify-between items-center p-4 border-t">
-    <span className="text-sm text-gray-500">Context: Onboarding</span>
-    <Settings className="w-5 h-5 text-gray-500 cursor-pointer" />
+            <div className="chatbot-footer">
+                <span className="chatbot-footer-text">Context: Onboarding</span>
+                <Settings className="chatbot-icon" />
+            </div>
         </div>
-        </div>
-);
+    );
 };
 
 export default ChatbotComponent;
