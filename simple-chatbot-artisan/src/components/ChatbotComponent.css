@@ -1,6 +1,15 @@
+
 /* ChatbotComponent.css */
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .chatbot-container {
-    position: absolute;
+    position: fixed;
     width: 300px;
     background-color: white;
     border-radius: 8px;
@@ -10,6 +19,8 @@
     word-wrap: break-word;
 }
 
+
+/* Other styles remain unchanged */
 .chatbot-header, .chatbot-footer {
     display: flex;
     justify-content: space-between;

@@ -10,6 +10,7 @@ const ChatbotComponent = () => {
     ]);
     const [isEditing, setIsEditing] = useState(null);
     const [editText, setEditText] = useState('');
+    const [position, setPosition] = useState({ x: 0, y: 0 });
     const chatbotRef = useRef(null);
 
     const handleSend = () => {
@@ -38,8 +39,9 @@ const ChatbotComponent = () => {
     const handleDrop = (e) => {
         e.preventDefault();
         const offset = JSON.parse(e.dataTransfer.getData('text/plain'));
-        chatbotRef.current.style.left = `${e.clientX - offset.offsetX}px`;
-        chatbotRef.current.style.top = `${e.clientY - offset.offsetY}px`;
+        const newX = e.clientX - offset.offsetX;
+        const newY = e.clientY - offset.offsetY;
+        setPosition({ x: newX, y: newY });
     };
 
     const handleDragOver = (e) => {
@@ -54,6 +56,7 @@ const ChatbotComponent = () => {
             onDragStart={handleDragStart}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
+            style={{ left: `${position.x}px`, top: `${position.y}px` }}
         >
             <div className="chatbot-header">
                 <div className="chatbot-header-left">
