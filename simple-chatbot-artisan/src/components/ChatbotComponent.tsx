@@ -9,13 +9,14 @@ type Message = {
     sender: 'bot' | 'user';
     timestamp: Date;
     reactions: { [key: string]: number };
+    avatar: string;
 };
 
 const ChatbotComponent = () => {
     const [messages, setMessages] = useState<Message[]>([
-        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date(), reactions: {} },
-        { id: 2, text: "Hi, thanks for connecting!", sender: 'user', timestamp: new Date(), reactions: {} },
-        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date(), reactions: {} },
+        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date(), reactions: {}, avatar: 'https://i.pravatar.cc/40?img=1' },
+        { id: 2, text: "Hi, thanks for connecting!", sender: 'user', timestamp: new Date(), reactions: {}, avatar: 'https://i.pravatar.cc/40?img=2' },
+        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date(), reactions: {}, avatar: 'https://i.pravatar.cc/40?img=1' },
     ]);
     const [isEditing, setIsEditing] = useState<number | null>(null);
     const [editText, setEditText] = useState('');
@@ -28,7 +29,7 @@ const ChatbotComponent = () => {
 
     const handleSend = () => {
         if (inputText.trim()) {
-            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user', timestamp: new Date(), reactions: {} }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user', timestamp: new Date(), reactions: {}, avatar: 'https://i.pravatar.cc/40?img=2' }]);
             setInputText('');
             simulateBotTyping();
         }
@@ -37,7 +38,7 @@ const ChatbotComponent = () => {
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: `File: ${file.name}`, sender: 'user', timestamp: new Date(), reactions: {} }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: `File: ${file.name}`, sender: 'user', timestamp: new Date(), reactions: {}, avatar: 'https://i.pravatar.cc/40?img=2' }]);
         }
     };
 
@@ -88,7 +89,7 @@ const ChatbotComponent = () => {
     const simulateBotTyping = () => {
         setIsTyping(true);
         setTimeout(() => {
-            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: "This is a bot response.", sender: 'bot', timestamp: new Date(), reactions: {} }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: "This is a bot response.", sender: 'bot', timestamp: new Date(), reactions: {}, avatar: 'https://i.pravatar.cc/40?img=1' }]);
             setIsTyping(false);
         }, 2000); // Simulate a 2-second typing delay
     };
@@ -141,6 +142,7 @@ const ChatbotComponent = () => {
                         onMouseEnter={() => setHoveredMessage(msg.id)}
                         onMouseLeave={() => setHoveredMessage(null)}
                     >
+                        <img src={msg.avatar} alt={`${msg.sender} avatar`} className="chatbot-avatar" />
                         {isEditing === msg.id ? (
                             <div className="chatbot-edit-container">
                                 <input
