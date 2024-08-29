@@ -1,5 +1,5 @@
 // src/components/ChatbotComponent.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Maximize2, Settings, Send, Edit, Trash2, Check } from 'lucide-react';
 import './ChatbotComponent.css';
 
@@ -14,12 +14,14 @@ const ChatbotComponent = () => {
     const [inputText, setInputText] = useState('');
     const [hoveredMessage, setHoveredMessage] = useState(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [isTyping, setIsTyping] = useState(false);
     const chatbotRef = useRef(null);
 
     const handleSend = () => {
         if (inputText.trim()) {
-            setMessages([...messages, { id: Date.now(), text: inputText, sender: 'user' }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user' }]);
             setInputText('');
+            simulateBotTyping();
         }
     };
 
@@ -65,6 +67,14 @@ const ChatbotComponent = () => {
 
     const handleDragOver = (e) => {
         e.preventDefault();
+    };
+
+    const simulateBotTyping = () => {
+        setIsTyping(true);
+        setTimeout(() => {
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: "This is a bot response.", sender: 'bot' }]);
+            setIsTyping(false);
+        }, 2000); // Simulate a 2-second typing delay
     };
 
     return (
@@ -120,6 +130,11 @@ const ChatbotComponent = () => {
                         )}
                     </div>
                 ))}
+                {isTyping && (
+                    <div className="chatbot-typing-indicator">
+                        Ava is typing...
+                    </div>
+                )}
             </div>
 
             <div className="chatbot-input-container">

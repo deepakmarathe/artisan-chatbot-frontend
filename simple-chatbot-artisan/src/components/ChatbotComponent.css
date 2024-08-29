@@ -107,3 +107,9 @@
     font-size: 12px;
     color: #888;
 }
+
+.chatbot-typing-indicator {
+    font-style: italic;
+    color: #888;
+    padding: 10px;
+}
