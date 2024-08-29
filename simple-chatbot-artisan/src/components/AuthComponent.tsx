@@ -99,7 +99,6 @@ const AuthComponent = () => {
             {errors.password && <div className="error">{errors.password}</div>}
             {errors.apiError && <div className="error">{errors.apiError}</div>}
             <button onClick={handleLogin} className="auth-button">Login</button>
-            <button onClick={handlePasswordReset} className="auth-button">Forgot Password?</button>
             <button onClick={handleRegister} className="auth-button">Register</button>
         </div>
     );
