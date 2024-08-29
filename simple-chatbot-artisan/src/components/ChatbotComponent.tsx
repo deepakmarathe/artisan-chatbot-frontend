@@ -5,9 +5,9 @@ import './ChatbotComponent.css';
 
 const ChatbotComponent = () => {
     const [messages, setMessages] = useState([
-        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot' },
-        { id: 2, text: "Hi, thanks for connecting!", sender: 'user' },
-        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot' },
+        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date() },
+        { id: 2, text: "Hi, thanks for connecting!", sender: 'user', timestamp: new Date() },
+        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot', timestamp: new Date() },
     ]);
     const [isEditing, setIsEditing] = useState(null);
     const [editText, setEditText] = useState('');
@@ -19,7 +19,7 @@ const ChatbotComponent = () => {
 
     const handleSend = () => {
         if (inputText.trim()) {
-            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user' }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: inputText, sender: 'user', timestamp: new Date() }]);
             setInputText('');
             simulateBotTyping();
         }
@@ -72,7 +72,7 @@ const ChatbotComponent = () => {
     const simulateBotTyping = () => {
         setIsTyping(true);
         setTimeout(() => {
-            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: "This is a bot response.", sender: 'bot' }]);
+            setMessages(prevMessages => [...prevMessages, { id: Date.now(), text: "This is a bot response.", sender: 'bot', timestamp: new Date() }]);
             setIsTyping(false);
         }, 2000); // Simulate a 2-second typing delay
     };
@@ -120,6 +120,7 @@ const ChatbotComponent = () => {
                         ) : (
                             <>
                                 <span>{msg.text}</span>
+                                <span className="chatbot-timestamp">{msg.timestamp.toLocaleTimeString()}</span>
                                 {hoveredMessage === msg.id && (
                                     <div className="chatbot-message-options">
                                         <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />

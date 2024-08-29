@@ -113,3 +113,18 @@
     color: #888;
     padding: 10px;
 }
+
+/* ChatbotComponent.css */
+/* ChatbotComponent.css */
+.chatbot-timestamp {
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+.chatbot-message-user .chatbot-timestamp {
+    color: #ddd; /* Lighter color for better visibility on dark background */
+}
+
+.chatbot-message-bot .chatbot-timestamp {
+    color: #555; /* Standard color for better visibility on light background */
+}
