@@ -32,7 +32,6 @@ const AuthComponent = () => {
             });
 
             if (response.ok) {
-                alert('Login successful');
                 navigate('/chat'); // Navigate to the chat page
             } else {
                 const errorData = await response.json();
@@ -64,7 +63,6 @@ const AuthComponent = () => {
             });
 
             if (response.ok) {
-                alert('Registration successful');
                 navigate('/'); // Navigate to the login page
             } else {
                 const errorData = await response.json();

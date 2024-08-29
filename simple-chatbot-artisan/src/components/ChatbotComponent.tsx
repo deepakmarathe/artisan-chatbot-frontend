@@ -117,7 +117,6 @@ const ChatbotComponent = () => {
 
             if (response.ok) {
                 localStorage.removeItem('access_token');
-                alert('Logout successful');
                 navigate('/'); // Navigate to the login page
             } else {
                 alert('Failed to logout. Please try again.');
