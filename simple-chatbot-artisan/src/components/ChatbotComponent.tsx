@@ -129,12 +129,30 @@ const ChatbotComponent = () => {
         }
     };
 
-    const handleUpdate = (id: number) => {
-        setMessages(messages.map(msg =>
-            msg.id === id ? { ...msg, text: editText, reactions: msg.reactions } : msg
-        ));
-        setIsEditing(null);
-        setEditText('');
+    const handleUpdate = async (id: number) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch(`http://localhost:8003/messages/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: editText })
+            });
+
+            if (response.ok) {
+                setMessages(messages.map(msg =>
+                    msg.id === id ? { ...msg, text: editText, reactions: msg.reactions } : msg
+                ));
+                setIsEditing(null);
+                setEditText('');
+            } else {
+                console.error('Failed to update message');
+            }
+        } catch (error) {
+            console.error('Error during message update:', error);
+        }
     };
 
     const handleEditKeyPress = (e: React.KeyboardEvent<HTMLInputElement>, id: number) => {
@@ -143,10 +161,26 @@ const ChatbotComponent = () => {
         }
     };
 
-    const handleDelete = (id: number) => {
-        setMessages(messages.filter(msg => msg.id !== id));
-    };
+    const handleDelete = async (id: number) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch(`http://localhost:8003/messages/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
+            if (response.ok) {
+                setMessages(messages.filter(msg => msg.id !== id));
+            } else {
+                console.error('Failed to delete message');
+            }
+        } catch (error) {
+            console.error('Error during message delete:', error);
+        }
+    };
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         const rect = chatbotRef.current!.getBoundingClientRect();
         e.dataTransfer.setData('text/plain', JSON.stringify({
