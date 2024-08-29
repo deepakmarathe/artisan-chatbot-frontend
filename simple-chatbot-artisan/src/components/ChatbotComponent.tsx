@@ -1,16 +1,24 @@
-import React, { useState, useRef } from 'react';
-import { X, Maximize2, Settings, Send, Edit, Trash2, Check } from 'lucide-react';
+import React, {useRef, useState} from 'react';
+import {Check, Edit, Maximize2, Send, Settings, Trash2, X} from 'lucide-react';
 import './ChatbotComponent.css';
 
 const ChatbotComponent = () => {
     const [messages, setMessages] = useState([
-        { id: 1, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot' },
-        { id: 2, text: "Hi, thanks for connecting!", sender: 'user' },
-        { id: 3, text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!", sender: 'bot' },
+        {
+            id: 1,
+            text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!",
+            sender: 'bot'
+        },
+        {id: 2, text: "Hi, thanks for connecting!", sender: 'user'},
+        {
+            id: 3,
+            text: "Hi Jane,\nAmazing how Mosey is simplifying state compliance\nfor businesses across the board!",
+            sender: 'bot'
+        },
     ]);
     const [isEditing, setIsEditing] = useState(null);
     const [editText, setEditText] = useState('');
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [position, setPosition] = useState({x: 0, y: 0});
     const chatbotRef = useRef(null);
 
     const handleSend = () => {
@@ -23,7 +31,7 @@ const ChatbotComponent = () => {
 
     const handleUpdate = (id) => {
         setMessages(messages.map(msg =>
-            msg.id === id ? { ...msg, text: editText } : msg
+            msg.id === id ? {...msg, text: editText} : msg
         ));
         setIsEditing(null);
     };
@@ -41,7 +49,7 @@ const ChatbotComponent = () => {
         const offset = JSON.parse(e.dataTransfer.getData('text/plain'));
         const newX = e.clientX - offset.offsetX;
         const newY = e.clientY - offset.offsetY;
-        setPosition({ x: newX, y: newY });
+        setPosition({x: newX, y: newY});
     };
 
     const handleDragOver = (e) => {
@@ -56,22 +64,23 @@ const ChatbotComponent = () => {
             onDragStart={handleDragStart}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            style={{ left: `${position.x}px`, top: `${position.y}px` }}
+            style={{left: `${position.x}px`, top: `${position.y}px`}}
         >
             <div className="chatbot-header">
                 <div className="chatbot-header-left">
-                    <img src="/api/placeholder/40/40" alt="Ava" className="chatbot-avatar" />
+                    <img src="/api/placeholder/40/40" alt="Ava" className="chatbot-avatar"/>
                     <span className="chatbot-title">Hey👋, I'm Ava</span>
                 </div>
                 <div className="chatbot-header-right">
-                    <Maximize2 className="chatbot-icon" />
-                    <X className="chatbot-icon" />
+                    <Maximize2 className="chatbot-icon"/>
+                    <X className="chatbot-icon"/>
                 </div>
             </div>
 
             <div className="chatbot-messages">
                 {messages.map((msg) => (
-                    <div key={msg.id} className={`chatbot-message ${msg.sender === 'user' ? 'chatbot-message-user' : 'chatbot-message-bot'}`}>
+                    <div key={msg.id}
+                         className={`chatbot-message ${msg.sender === 'user' ? 'chatbot-message-user' : 'chatbot-message-bot'}`}>
                         {isEditing === msg.id ? (
                             <div className="chatbot-edit-container">
                                 <input
@@ -80,14 +89,17 @@ const ChatbotComponent = () => {
                                     onChange={(e) => setEditText(e.target.value)}
                                     className="chatbot-edit-input"
                                 />
-                                <Check className="chatbot-icon" onClick={() => handleUpdate(msg.id)} />
+                                <Check className="chatbot-icon" onClick={() => handleUpdate(msg.id)}/>
                             </div>
                         ) : (
                             <>
                                 <span>{msg.text}</span>
                                 <div className="chatbot-message-options">
-                                    <Edit className="chatbot-icon" onClick={() => { setIsEditing(msg.id); setEditText(msg.text); }} />
-                                    <Trash2 className="chatbot-icon" onClick={() => handleDelete(msg.id)} />
+                                    <Edit className="chatbot-icon" onClick={() => {
+                                        setIsEditing(msg.id);
+                                        setEditText(msg.text);
+                                    }}/>
+                                    <Trash2 className="chatbot-icon" onClick={() => handleDelete(msg.id)}/>
                                 </div>
                             </>
                         )}
@@ -96,13 +108,13 @@ const ChatbotComponent = () => {
             </div>
 
             <div className="chatbot-input-container">
-                <input type="text" placeholder="Type a message..." className="chatbot-input" />
-                <Send className="chatbot-icon" onClick={handleSend} />
+                <input type="text" placeholder="Type a message..." className="chatbot-input"/>
+                <Send className="chatbot-icon" onClick={handleSend}/>
             </div>
 
             <div className="chatbot-footer">
                 <span className="chatbot-footer-text">Context: Onboarding</span>
-                <Settings className="chatbot-icon" />
+                <Settings className="chatbot-icon"/>
             </div>
         </div>
     );
