@@ -58,6 +58,7 @@
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 8px;
+    position: relative;
 }
 
 .chatbot-message-user {
@@ -115,7 +116,7 @@
 }
 
 .chatbot-timestamp {
-    font-size: 10px;
+    font-size: 12px; /* Increased font size for better readability */
     margin-left: 10px;
 }
 
@@ -129,4 +130,27 @@
 
 .chatbot-file-upload {
     cursor: pointer;
+}
+
+.emoji-picker {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+    position: absolute;
+    bottom: 30px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 1; /* Ensure the emoji picker is above other elements */
+}
+
+.chatbot-reactions {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    transform: translateY(20px); /* Adjusted position to avoid overlapping with the timestamp */
 }
