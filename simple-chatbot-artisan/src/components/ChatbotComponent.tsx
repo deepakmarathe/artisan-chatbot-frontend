@@ -4,7 +4,7 @@ import { X, Maximize2, Settings, Send, Edit, Trash2, Check, Paperclip, Smile, Lo
 import './ChatbotComponent.css';
 
 type Message = {
-    id: number;
+    id?: number;
     text: string;
     sender: 'bot' | 'user' | 'system';
     timestamp: Date;
@@ -56,20 +56,6 @@ const ChatbotComponent = () => {
                     throw new Error('Failed to fetch messages');
                 }
             } catch (error) {
-                if (!messages.some(msg => msg.text.includes('Failed to fetch messages'))) {
-                    setMessages(prevMessages => [
-                        ...prevMessages,
-                        {
-                            id: Date.now(),
-                            text: `**Error:** Failed to fetch messages.`,
-                            sender: 'system',
-                            timestamp: new Date(),
-                            reactions: {},
-                            avatar: '',
-                            status: 'failed'
-                        }
-                    ]);
-                }
                 console.error('Error fetching messages:', error);
             }
         };
@@ -80,7 +66,6 @@ const ChatbotComponent = () => {
     const handleSend = async () => {
         if (inputText.trim()) {
             const newMessage: Message = {
-                id: Date.now(),
                 text: inputText,
                 sender: 'user',
                 timestamp: new Date(),
@@ -104,38 +89,42 @@ const ChatbotComponent = () => {
                 });
 
                 if (response.ok) {
+                    // remove the last message from the messages state variable
+                    setMessages(prevMessages => prevMessages.slice(0, -1));
+
                     const data = await response.json();
+
+                    const acknowledgementMessage : Message=  {
+                            id: data.message_create_response.id,
+                            text: data.message_create_response.content,
+                            sender: 'user',
+                            timestamp: new Date(),
+                            reactions: {},
+                            avatar: 'https://i.pravatar.cc/40?img=2',
+                            status: 'sent'
+                    }
+                    setMessages(prevMessages => [...prevMessages, acknowledgementMessage]);
+
                     const botMessage: Message = {
-                        id: Date.now(),
-                        text: data.content,
+                        id: data.server_response.id,
+                        text: data.server_response.content,
                         sender: 'bot',
-                        timestamp: new Date(),
+                        timestamp: data.server_response.timestamp ? new Date(data.server_response.timestamp) : new Date(),
                         reactions: {},
                         avatar: 'https://i.pravatar.cc/40?img=1',
                         status: 'sent'
                     };
                     setMessages(prevMessages => [...prevMessages, botMessage]);
                 } else {
+                    setMessages(prevMessages => prevMessages.map(msg =>
+                        msg.id === newMessage.id ? { ...msg, status: 'failed' } : msg
+                    ));
                     throw new Error('Failed to send message');
                 }
             } catch (error) {
                 setMessages(prevMessages => prevMessages.map(msg =>
                     msg.id === newMessage.id ? { ...msg, status: 'failed' } : msg
                 ));
-                if (!messages.some(msg => msg.text.includes('Failed to send message'))) {
-                    setMessages(prevMessages => [
-                        ...prevMessages,
-                        {
-                            id: Date.now(),
-                            text: `**Error:** Failed to send message.`,
-                            sender: 'system',
-                            timestamp: new Date(),
-                            reactions: {},
-                            avatar: '',
-                            status: 'failed'
-                        }
-                    ]);
-                }
                 console.error('Error during message send:', error);
             } finally {
                 setIsTyping(false);
@@ -188,20 +177,7 @@ const ChatbotComponent = () => {
             setMessages(messages.map(msg =>
                 msg.id === id ? { ...msg, status: 'failed' } : msg
             ));
-            if (!messages.some(msg => msg.text.includes('Failed to update message'))) {
-                setMessages(prevMessages => [
-                    ...prevMessages,
-                    {
-                        id: Date.now(),
-                        text: `**Error:** Failed to update message.`,
-                        sender: 'system',
-                        timestamp: new Date(),
-                        reactions: {},
-                        avatar: '',
-                        status: 'failed'
-                    }
-                ]);
-            }
+
             console.error('Error during message update:', error);
         }
     };
@@ -232,20 +208,7 @@ const ChatbotComponent = () => {
             setMessages(messages.map(msg =>
                 msg.id === id ? { ...msg, status: 'failed' } : msg
             ));
-            if (!messages.some(msg => msg.text.includes('Failed to delete message'))) {
-                setMessages(prevMessages => [
-                    ...prevMessages,
-                    {
-                        id: Date.now(),
-                        text: `**Error:** Failed to delete message.`,
-                        sender: 'system',
-                        timestamp: new Date(),
-                        reactions: {},
-                        avatar: '',
-                        status: 'failed'
-                    }
-                ]);
-            }
+
             console.error('Error during message delete:', error);
         }
     };
@@ -262,7 +225,7 @@ const ChatbotComponent = () => {
         if (msg.status === 'failed') {
             try {
                 if (msg.sender === 'user') {
-                    setInputText(msg.text);
+                    // setInputText(msg.text);
                     await handleSend();
                 } else {
                     await handleUpdate(msg.id);
