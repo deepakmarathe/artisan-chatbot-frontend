@@ -17,7 +17,9 @@ const RegisterComponent = () => {
     return (
         <div className="auth-container">
             <h2>Register</h2>
+            <label htmlFor="username">Username</label>
             <input
+                id="username"
                 type="text"
                 placeholder="Username"
                 value={username}
@@ -25,6 +27,7 @@ const RegisterComponent = () => {
                 className="auth-input"
             />
             <input
+                id="email"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -32,6 +35,7 @@ const RegisterComponent = () => {
                 className="auth-input"
             />
             <input
+                id="password"
                 type="password"
                 placeholder="Password"
                 value={password}
