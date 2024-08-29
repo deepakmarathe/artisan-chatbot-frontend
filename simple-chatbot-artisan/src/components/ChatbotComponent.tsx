@@ -56,18 +56,20 @@ const ChatbotComponent = () => {
                     throw new Error('Failed to fetch messages');
                 }
             } catch (error) {
-                setMessages(prevMessages => [
-                    ...prevMessages,
-                    {
-                        id: Date.now(),
-                        text: `**Error:** Failed to fetch messages. `,
-                        sender: 'system',
-                        timestamp: new Date(),
-                        reactions: {},
-                        avatar: '',
-                        status: 'failed'
-                    }
-                ]);
+                if (!messages.some(msg => msg.text.includes('Failed to fetch messages'))) {
+                    setMessages(prevMessages => [
+                        ...prevMessages,
+                        {
+                            id: Date.now(),
+                            text: `**Error:** Failed to fetch messages.`,
+                            sender: 'system',
+                            timestamp: new Date(),
+                            reactions: {},
+                            avatar: '',
+                            status: 'failed'
+                        }
+                    ]);
+                }
                 console.error('Error fetching messages:', error);
             }
         };
@@ -120,18 +122,20 @@ const ChatbotComponent = () => {
                 setMessages(prevMessages => prevMessages.map(msg =>
                     msg.id === newMessage.id ? { ...msg, status: 'failed' } : msg
                 ));
-                setMessages(prevMessages => [
-                    ...prevMessages,
-                    {
-                        id: Date.now(),
-                        text: `**Error:** Failed to send message.}`,
-                        sender: 'system',
-                        timestamp: new Date(),
-                        reactions: {},
-                        avatar: '',
-                        status: 'failed'
-                    }
-                ]);
+                if (!messages.some(msg => msg.text.includes('Failed to send message'))) {
+                    setMessages(prevMessages => [
+                        ...prevMessages,
+                        {
+                            id: Date.now(),
+                            text: `**Error:** Failed to send message.`,
+                            sender: 'system',
+                            timestamp: new Date(),
+                            reactions: {},
+                            avatar: '',
+                            status: 'failed'
+                        }
+                    ]);
+                }
                 console.error('Error during message send:', error);
             } finally {
                 setIsTyping(false);
@@ -184,18 +188,20 @@ const ChatbotComponent = () => {
             setMessages(messages.map(msg =>
                 msg.id === id ? { ...msg, status: 'failed' } : msg
             ));
-            setMessages(prevMessages => [
-                ...prevMessages,
-                {
-                    id: Date.now(),
-                    text: `**Error:** Failed to update message. `,
-                    sender: 'system',
-                    timestamp: new Date(),
-                    reactions: {},
-                    avatar: '',
-                    status: 'failed'
-                }
-            ]);
+            if (!messages.some(msg => msg.text.includes('Failed to update message'))) {
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    {
+                        id: Date.now(),
+                        text: `**Error:** Failed to update message.`,
+                        sender: 'system',
+                        timestamp: new Date(),
+                        reactions: {},
+                        avatar: '',
+                        status: 'failed'
+                    }
+                ]);
+            }
             console.error('Error during message update:', error);
         }
     };
@@ -226,18 +232,20 @@ const ChatbotComponent = () => {
             setMessages(messages.map(msg =>
                 msg.id === id ? { ...msg, status: 'failed' } : msg
             ));
-            setMessages(prevMessages => [
-                ...prevMessages,
-                {
-                    id: Date.now(),
-                    text: `**Error:** Failed to delete message. `,
-                    sender: 'system',
-                    timestamp: new Date(),
-                    reactions: {},
-                    avatar: '',
-                    status: 'failed'
-                }
-            ]);
+            if (!messages.some(msg => msg.text.includes('Failed to delete message'))) {
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    {
+                        id: Date.now(),
+                        text: `**Error:** Failed to delete message.`,
+                        sender: 'system',
+                        timestamp: new Date(),
+                        reactions: {},
+                        avatar: '',
+                        status: 'failed'
+                    }
+                ]);
+            }
             console.error('Error during message delete:', error);
         }
     };
@@ -252,11 +260,15 @@ const ChatbotComponent = () => {
 
     const handleRetry = async (msg: Message) => {
         if (msg.status === 'failed') {
-            if (msg.sender === 'user') {
-                setInputText(msg.text);
-                await handleSend();
-            } else {
-                await handleUpdate(msg.id);
+            try {
+                if (msg.sender === 'user') {
+                    setInputText(msg.text);
+                    await handleSend();
+                } else {
+                    await handleUpdate(msg.id);
+                }
+            } catch (error) {
+                console.error('Error during retry:', error);
             }
         }
     };
