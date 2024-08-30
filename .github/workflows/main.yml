@@ -32,9 +32,8 @@ jobs:
             export NVM_DIR=~/.nvm &&
             source ~/.nvm/nvm.sh &&
             nvm use lts/iron &&
-            pm2 stop web &&
             cd web/simple-chatbot-artisan/ &&
+            pm2 stop simple-chatbot-artisan &&
             npm ci &&
-            npm run build &&
             pm2 restart simple-chatbot-artisan
           '
