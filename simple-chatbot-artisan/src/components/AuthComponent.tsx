@@ -24,7 +24,7 @@ const AuthComponent = () => {
             formData.append('username', username);
             formData.append('password', password);
 
-            const response = await fetch('http://localhost:8003/token', {
+            const response = await fetch('http://localhost:8000/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -58,7 +58,7 @@ const AuthComponent = () => {
             formData.append('username', username);
             formData.append('password', password);
 
-            const response = await fetch('http://localhost:8003/register-form', {
+            const response = await fetch('http://localhost:8000/register-form', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
