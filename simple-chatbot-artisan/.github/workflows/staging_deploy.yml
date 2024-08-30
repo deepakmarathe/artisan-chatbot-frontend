@@ -1,0 +1,41 @@
+name: Staging Deploy
+
+on:
+  push:
+    branches: [staging, feature/cicd_actions]
+
+jobs:
+  deploy:
+    name: Staging deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build & deploy
+        env:
+          EC2_SSH_KEY: ${{secrets.EC2_SSH_KEY}}
+          EC2_USERNAME: ${{secrets.EC2_USERNAME}}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          echo "SSH key and EC2 IP address whitelisted"
+          
+          scp -r * $EC2_USERNAME@$EC2_HOST:/home/ubuntu/web/
+          echo "Files copied to remote server"
+        
+          echo "$EC2_SSH_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USERNAME}@${EC2_HOST} '
+            export NVM_DIR=~/.nvm &&
+            source ~/.nvm/nvm.sh &&
+            nvm use lts/iron &&
+            pm2 stop web &&
+            cd web &&
+            rm -rf .next &&
+            npm ci &&
+            npm run build &&
+            pm2 restart web
+          '
