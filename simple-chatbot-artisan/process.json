@@ -5,7 +5,10 @@
       "script": "npm run start",
       "log_date_format": "YYYY-MM-DD HH:mm:ss.SSS Z",
       "watch": false,
-      "exp_backoff_restart_delay": 100
+      "exp_backoff_restart_delay": 100,
+      "env": {
+        "PORT": 80
+      }
     }
   ]
 }
