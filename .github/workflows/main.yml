@@ -33,7 +33,7 @@ jobs:
             source ~/.nvm/nvm.sh &&
             nvm use lts/iron &&
             cd web/simple-chatbot-artisan/ &&
-            pm2 stop simple-chatbot-artisan &&
+            pm2 stop process.json &&
             npm ci &&
-            pm2 restart simple-chatbot-artisan
+            pm2 restart process.json
           '
