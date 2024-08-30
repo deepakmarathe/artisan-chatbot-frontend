@@ -34,8 +34,7 @@ jobs:
             nvm use lts/iron &&
             pm2 stop web &&
             cd web/simple-chatbot-artisan/ &&
-            rm -rf .next &&
             npm ci &&
             npm run build &&
-            pm2 restart web
+            pm2 restart simple-chatbot-artisan
           '
