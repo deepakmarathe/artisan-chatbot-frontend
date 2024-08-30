@@ -33,7 +33,7 @@ const ChatbotComponent = () => {
         const fetchMessages = async () => {
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch('http://localhost:8003/messages/', {
+                const response = await fetch('http://localhost:8000/messages/', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -79,7 +79,7 @@ const ChatbotComponent = () => {
 
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch('http://localhost:8003/messages/', {
+                const response = await fetch('http://localhost:8000/messages/', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -155,7 +155,7 @@ const ChatbotComponent = () => {
     const handleUpdate = async (id: number) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await fetch(`http://localhost:8003/messages/${id}`, {
+            const response = await fetch(`http://localhost:8000/messages/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -191,7 +191,7 @@ const ChatbotComponent = () => {
     const handleDelete = async (id: number) => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await fetch(`http://localhost:8003/messages/${id}`, {
+            const response = await fetch(`http://localhost:8000/messages/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -261,7 +261,7 @@ const ChatbotComponent = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch('http://localhost:8003/logout', {
+            const response = await fetch('http://localhost:8000/logout', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
