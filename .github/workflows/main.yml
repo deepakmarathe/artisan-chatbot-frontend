@@ -33,7 +33,7 @@ jobs:
             source ~/.nvm/nvm.sh &&
             nvm use lts/iron &&
             pm2 stop web &&
-            cd web &&
+            cd web/simple-chatbot-artisan/ &&
             rm -rf .next &&
             npm ci &&
             npm run build &&
