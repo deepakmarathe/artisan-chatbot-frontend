@@ -2,7 +2,7 @@ name: Staging Deploy
 
 on:
   push:
-    branches: [staging, feature/cicd_actions]
+    branches: [staging, feature/cicd_actions, main]
 
 jobs:
   deploy:
