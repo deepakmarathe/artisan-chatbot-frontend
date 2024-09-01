@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "simple-chatbot-artisan",
-      "script": "npm run start",
+      "script": "PORT=80 NODE_ENV=production react-scripts start",
       "log_date_format": "YYYY-MM-DD HH:mm:ss.SSS Z",
       "watch": false,
       "exp_backoff_restart_delay": 100,
