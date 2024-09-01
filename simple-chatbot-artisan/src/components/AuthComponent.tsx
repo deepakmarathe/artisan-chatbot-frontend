@@ -7,9 +7,10 @@ const AuthComponent = () => {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<{ username?: string; password?: string; apiError?: string }>({});
     const navigate = useNavigate();
-    const serverUrl = process.env.NODE_ENV === 'production'
-        ? process.env.REACT_APP_SERVER_URL_PROD
-        : process.env.REACT_APP_SERVER_URL_DEV;
+    const serverUrl = process.env.REACT_APP_SERVER_URL_PROD
+    // process.env.NODE_ENV === 'production'
+    //     ? process.env.REACT_APP_SERVER_URL_PROD
+    //     : process.env.REACT_APP_SERVER_URL_DEV;
 
     const validate = () => {
         const newErrors: { username?: string; password?: string } = {};

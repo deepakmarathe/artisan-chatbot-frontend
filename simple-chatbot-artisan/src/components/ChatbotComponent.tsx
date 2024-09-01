@@ -25,9 +25,10 @@ const ChatbotComponent = () => {
     const chatbotRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const [username, setUsername] = useState<string | null>(null);
-    const serverUrl = process.env.NODE_ENV === 'production'
-        ? process.env.REACT_APP_SERVER_URL_PROD
-        : process.env.REACT_APP_SERVER_URL_DEV;
+    const serverUrl = process.env.REACT_APP_SERVER_URL_PROD
+    // process.env.NODE_ENV === 'production'
+    //     ? process.env.REACT_APP_SERVER_URL_PROD
+    //     : process.env.REACT_APP_SERVER_URL_DEV;
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
