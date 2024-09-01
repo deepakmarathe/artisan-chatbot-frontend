@@ -25,6 +25,9 @@ const ChatbotComponent = () => {
     const chatbotRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const [username, setUsername] = useState<string | null>(null);
+    const serverUrl = process.env.NODE_ENV === 'production'
+        ? process.env.REACT_APP_SERVER_URL_PROD
+        : process.env.REACT_APP_SERVER_URL_DEV;
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
@@ -33,8 +36,7 @@ const ChatbotComponent = () => {
         const fetchMessages = async () => {
             try {
                 const token = localStorage.getItem('access_token');
-                // const response = await fetch('http://localhost:8000/messages/', {
-                const response = await fetch('http://52.71.98.179:8000/messages/', {
+                const response = await fetch(`${serverUrl}/messages/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -80,8 +82,7 @@ const ChatbotComponent = () => {
 
             try {
                 const token = localStorage.getItem('access_token');
-                // const response = await fetch('http://localhost:8000/messages/', {
-                const response = await fetch('http://52.71.98.179:8000/messages/', {
+                const response = await fetch(`${serverUrl}/messages/`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -157,8 +158,7 @@ const ChatbotComponent = () => {
     const handleUpdate = async (id: number) => {
         try {
             const token = localStorage.getItem('access_token');
-            // const response = await fetch(`http://localhost:8000/messages/${id}`, {
-            const response = await fetch(`http://52.71.98.179:8000/messages/${id}`, {
+            const response = await fetch(`${serverUrl}/messages/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -194,8 +194,7 @@ const ChatbotComponent = () => {
     const handleDelete = async (id: number) => {
         try {
             const token = localStorage.getItem('access_token');
-            // const response = await fetch(`http://localhost:8000/messages/${id}`, {
-            const response = await fetch(`http://52.71.98.179:8000/messages/${id}`, {
+            const response = await fetch(`${serverUrl}/messages/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -265,8 +264,7 @@ const ChatbotComponent = () => {
 
     const handleLogout = async () => {
         try {
-            // const response = await fetch('http://localhost:8000/logout', {
-            const response = await fetch('http://52.71.98.179:8000/logout', {
+            const response = await fetch(`$serverUrl}/logout`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
