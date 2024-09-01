@@ -27,7 +27,7 @@ const ChatbotComponent = () => {
     const [username, setUsername] = useState<string | null>(null);
     // const serverUrl = process.env.REACT_APP_SERVER_URL_PROD
     // const serverUrl = process.env.REACT_APP_SERVER_URL_DEV
-    const serverUrl = "http://52.71.98.179:8000"
+    const serverUrl = 'http://52.71.98.179:8000'
     // process.env.NODE_ENV === 'production'
     //     ? process.env.REACT_APP_SERVER_URL_PROD
     //     : process.env.REACT_APP_SERVER_URL_DEV;
@@ -267,7 +267,7 @@ const ChatbotComponent = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch(`$serverUrl}/logout`, {
+            const response = await fetch(`${serverUrl}/logout`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
