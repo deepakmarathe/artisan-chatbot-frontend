@@ -308,8 +308,8 @@ const ChatbotComponent = () => {
         >
             <div className="chatbot-header">
                 <div className="chatbot-header-left">
-                    <img src="/api/placeholder/40/40" alt="Ava" className="chatbot-avatar" />
-                    <span className="chatbot-title">Hey {localStorage.getItem('username')} 👋, I'm Ava</span>
+                    <img src="https://i.pravatar.cc/40?img=3" alt="Artisan" className="chatbot-avatar" />
+                    <span className="chatbot-title">Hey {localStorage.getItem('username')} 👋, I'm Artisan</span>
                 </div>
                 <div className="chatbot-header-right">
                     <Maximize2 className="chatbot-icon" />
