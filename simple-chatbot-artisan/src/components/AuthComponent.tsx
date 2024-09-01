@@ -7,6 +7,9 @@ const AuthComponent = () => {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<{ username?: string; password?: string; apiError?: string }>({});
     const navigate = useNavigate();
+    const serverUrl = process.env.NODE_ENV === 'production'
+        ? process.env.REACT_APP_SERVER_URL_PROD
+        : process.env.REACT_APP_SERVER_URL_DEV;
 
     const validate = () => {
         const newErrors: { username?: string; password?: string } = {};
@@ -24,8 +27,7 @@ const AuthComponent = () => {
             formData.append('username', username);
             formData.append('password', password);
 
-            // const response = await fetch('http://localhost:8000/token', {
-            const response = await fetch('http://52.71.98.179:8000/token', {
+            const response = await fetch(`${serverUrl}/token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -59,8 +61,7 @@ const AuthComponent = () => {
             formData.append('username', username);
             formData.append('password', password);
 
-            // const response = await fetch('http://localhost:8000/register-form', {
-            const response = await fetch('http://52.71.98.179:8000/register-form', {
+            const response = await fetch(`${serverUrl}/register-form`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
