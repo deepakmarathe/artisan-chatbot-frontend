@@ -9,7 +9,8 @@ const AuthComponent = () => {
     const navigate = useNavigate();
     // const serverUrl = process.env.REACT_APP_SERVER_URL_PROD
     // const serverUrl = process.env.REACT_APP_SERVER_URL_DEV
-    const serverUrl = 'http://52.71.98.179:8000'
+    // const serverUrl = 'http://52.71.98.179:8000'
+    const serverUrl = 'http://localhost:8000'
     // process.env.NODE_ENV === 'production'
     //     ? process.env.REACT_APP_SERVER_URL_PROD
     //     : process.env.REACT_APP_SERVER_URL_DEV;
